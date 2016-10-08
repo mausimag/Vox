@@ -1,0 +1,47 @@
+<script src="../build/vox.js"></script>
+
+<h1>Vox</h1>
+
+<input type="text" vox-bind="myObject.name" vox-required="true" vox-message="Invalid name" />
+<br><br>
+
+<textarea vox-bind="myObject.inner.foo"></textarea>
+<br><br>
+
+<input type="checkbox" vox-bind="myObject.active" />
+<br><br>
+
+<select vox-bind="myObject.option" vox-value-type="int">
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+</select>
+<br><br>
+
+<input type="button" onclick="validate()" value="Validate" />
+
+
+<script>
+    var myObject = {
+        name: "myname",
+        active: true,
+        inner: {
+            foo: 'bar'
+        },
+        option: 2
+    };
+
+    Vox.bootstrap();
+    Vox.binder.init()
+    Vox.validation.init()
+
+    function validate() {
+        Vox.validation.validateAll(function(invalids) {
+            invalids.forEach(function(o) {
+                alert(o.message);
+            });
+        });
+    }
+</script>
