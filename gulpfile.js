@@ -9,7 +9,7 @@ var srcFolder = './src/*.js';
 gulp.task('build', function() {
     return gulp
         .src([srcFolder])
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(concat('vox.js'))
         .pipe(gulp.dest('build/'));
 });

@@ -2,16 +2,23 @@ var Vox = (function() {
     var self = {};
     self.ctx = null;
 
+    // binder
     self.binder = VoxBinder;
     self.attrBind = 'vox-bind';
     self.attrValueType = 'vox-value-type';
 
+    // validation
     self.validation = VoxValidation;
     self.attrPattern = 'vox-pattern';
     self.attrRequired = 'vox-required';
     self.attrInvalidMessage = 'vox-message';
 
+    // ajax
     self.ajax = VoxAjax;
+
+    // locale
+    self.locale = VoxLocale;
+    self.attrLabel = 'vox-label';
 
     self.bootstrap = function() {}
 
@@ -20,6 +27,38 @@ var Vox = (function() {
         for (var i = 0; i < len; i++) {
             cb(arr[i], i, arr);
         }
+    };
+
+    self.getAllElementsByAttr = function(attrName) {
+        var elements = [];
+        var all = document.getElementsByTagName('*');
+        for (var i = 0; i < all.length; i++) {
+            if (all[i].getAttribute(attrName) !== null)
+                elements.push(all[i]);
+        }
+        return elements;
+    };
+
+    self.elementValue = function(obj, prop) {
+        if (typeof obj === 'undefined') {
+            return false;
+        }
+        var _index = prop.indexOf('.')
+        if (_index > -1) {
+            return self.elementValue(obj[prop.substring(0, _index)], prop.substr(_index + 1));
+        }
+        return obj[prop];
+    };
+
+    self.getObjectAttr = function(path, obj) {
+        if (typeof obj === "undefined" || obj === null) return;
+        path = path.split(/[\.\[\]\"\']{1,2}/);
+        for (var i = 0, l = path.length; i < l; i++) {
+            if (path[i] === "") continue;
+            obj = obj[path[i]];
+            if (typeof obj === "undefined" || obj === null) return;
+        }
+        return obj;
     };
 
     return self;

@@ -2,38 +2,6 @@ var VoxBinder = (function() {
     var self = {};
     self.mapping = {};
 
-    self.getAllBindedElements = function() {
-        var elements = [];
-        var all = document.getElementsByTagName('*');
-        for (var i = 0; i < all.length; i++) {
-            if (all[i].getAttribute(Vox.attrBind) !== null)
-                elements.push(all[i]);
-        }
-        return elements;
-    };
-
-    self.getObjectAttr = function(path, obj) {
-        if (typeof obj === "undefined" || obj === null) return;
-        path = path.split(/[\.\[\]\"\']{1,2}/);
-        for (var i = 0, l = path.length; i < l; i++) {
-            if (path[i] === "") continue;
-            obj = obj[path[i]];
-            if (typeof obj === "undefined" || obj === null) return;
-        }
-        return obj;
-    };
-
-    self.elementValue = function(obj, prop) {
-        if (typeof obj === 'undefined') {
-            return false;
-        }
-        var _index = prop.indexOf('.')
-        if (_index > -1) {
-            return self.elementValue(obj[prop.substring(0, _index)], prop.substr(_index + 1));
-        }
-        return obj[prop];
-    };
-
     self.bindGetterSetter = function(obj, prop, path, element, valueDOM) {
         if (typeof obj === 'undefined') {
             return false;
@@ -79,7 +47,7 @@ var VoxBinder = (function() {
         }
 
 
-        var value = self.elementValue(object, path.join('.'));
+        var value = Vox.elementValue(object, path.join('.'));
         self.mapping[_path] = value;
         self.bindGetterSetter(object, path.join('.'), _path, element, valueDOM)
 
@@ -112,7 +80,7 @@ var VoxBinder = (function() {
         if (context == null) {
             self.ctx = window;
         }
-        var elements = self.getAllBindedElements();
+        var elements = Vox.getAllElementsByAttr(Vox.attrBind);
         for (var i = 0; i < elements.length; i++) {
             var attrs = elements[i].getAttribute(Vox.attrBind).split('.');
             self.bindElement(elements[i], attrs)

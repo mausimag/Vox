@@ -1,4 +1,372 @@
-var VoxAjax=function(){var t={},n=null,e=[function(){return new XMLHttpRequest},function(){return new ActiveXObject("Msxml2.XMLHTTP")},function(){return new ActiveXObject("Msxml3.XMLHTTP")},function(){return new ActiveXObject("Microsoft.XMLHTTP")}],r=function(){for(var t=!1,n=e.length,r=0;r<n;r++){try{t=e[r]()}catch(t){continue}break}return t},c=function(t){var n;try{n=JSON.parse(t.responseText)}catch(e){n=t.responseText}return[n,t]};return t.checkXHR=function(){return null==n&&(n=r()),n},t.http=function(n){var e=t.checkXHR();if(e){var r={success:function(){},error:function(){},then:function(){}};e.open(n.method,n.url,!0),e.setRequestHeader("Content-type",n.contentType),e.onreadystatechange=function(){var t;4===e.readyState&&(t=c(e),e.status>=200&&e.status<300?r.success.apply(r,t):r.error.apply(r,t),r.then.apply(r,t))},e.send(n.data);var o={success:function(t){return r.success=t,o},error:function(t){return r.error=t,o},then:function(t){return r.then=t,o}};return o}},t.post=function(n,e){return t.http({method:"POST",url:n,data:e,contentType:"application/json"})},t.get=function(n,e){return t.http({method:"GET",url:n,data:e,contentType:"application/json"})},t.put=function(n,e){return t.http({method:"PUT",url:n,data:e,contentType:"application/json"})},t.delete=function(n,e){return t.http({method:"DELETE",url:n,data:e,contentType:"application/json"})},t}();
-var VoxBinder=function(){var e={};return e.mapping={},e.getAllBindedElements=function(){for(var e=[],t=document.getElementsByTagName("*"),n=0;n<t.length;n++)null!==t[n].getAttribute(Vox.attrBind)&&e.push(t[n]);return e},e.getObjectAttr=function(e,t){if("undefined"!=typeof t&&null!==t){e=e.split(/[\.\[\]\"\']{1,2}/);for(var n=0,r=e.length;n<r;n++)if(""!==e[n]&&(t=t[e[n]],"undefined"==typeof t||null===t))return;return t}},e.elementValue=function(t,n){if("undefined"==typeof t)return!1;var r=n.indexOf(".");return r>-1?e.elementValue(t[n.substring(0,r)],n.substr(r+1)):t[n]},e.bindGetterSetter=function(t,n,r,i,a){if("undefined"==typeof t)return!1;var u=n.indexOf(".");return u>-1?e.bindGetterSetter(t[n.substring(0,u)],n.substr(u+1),r,i):void Object.defineProperty(t,n,{get:function(){return e.mapping[r]},set:function(t){i[a]=t,e.mapping[r]=t}})},e.bindElement=function(t,n){var r=t.getAttribute(Vox.attrBind),i=r.split(/[\.\[\]\"\']{1,2}/),a=i.shift(),u=e.ctx[a],o=t.tagName.toLowerCase(),l=t.type.toLowerCase(),f="",d="";"input"==o||"textarea"==o?"text"==l||"textarea"==l?(f="value",d="keyup"):"checkbox"==l&&(f="checked",d="change"):"select"==o&&(f="value",d="change");var s=e.elementValue(u,i.join("."));e.mapping[r]=s,e.bindGetterSetter(u,i.join("."),r,t,f),""!==f&&""!==d&&(t[f]=s,t.addEventListener(d,function(){var n=t[f],i=t.getAttribute(Vox.attrValueType);if(i)switch(i.toLowerCase()){case"int":n=parseInt(n);break;case"float":n=parseFloat(n);break;case"string":default:n=n.toString()}e.mapping[r]=n},!1))},e.init=function(t){null==t&&(e.ctx=window);for(var n=e.getAllBindedElements(),r=0;r<n.length;r++){var i=n[r].getAttribute(Vox.attrBind).split(".");e.bindElement(n[r],i)}},e}();
-var VoxValidation=function(){var t={};return t.ctx=null,t.invalids=[],t.init=function(e){null==e&&(t.ctx=window)},t.getVoxdElements=function(){var e=t.ctx.document.getElementsByTagName("*");t.invalids=[],Vox.forEach(e,function(e){e.getAttribute(Vox.attrPattern)&&t.invalids.push(e);var a=e.getAttribute(Vox.attrRequired);"true"==a&&t.invalids.push(e)})},t.validateRegex=function(t,e){var a=new RegExp(e);return a.test(t)},t.validateRequired=function(){var e=[];return Vox.forEach(t.invalids,function(a){var i=a.tagName.toLowerCase();if("input"==i||"textarea"==i){var n=a.value.trim(),r=a.getAttribute(Vox.attrRequired),u=a.getAttribute(Vox.attrPattern),o=r?"^.{0}$":u;if(1==t.validateRegex(n,o)){var l={element:a};l.message=a.getAttribute(Vox.attrInvalidMessage),e.push(l)}}}),e},t.validateAll=function(e){t.getVoxdElements(),e(t.validateRequired())},t}();
-var Vox=function(){var t={};return t.ctx=null,t.binder=VoxBinder,t.attrBind="vox-bind",t.attrValueType="vox-value-type",t.validation=VoxValidation,t.attrPattern="vox-pattern",t.attrRequired="vox-required",t.attrInvalidMessage="vox-message",t.ajax=VoxAjax,t.bootstrap=function(){},t.forEach=function(t,a){for(var r=t.length,e=0;e<r;e++)a(t[e],e,t)},t}();
+var VoxAjax = (function() {
+    var self = {};
+    var _xhr = null;
+
+    var XMLHttpFactories = [
+        function() { return new XMLHttpRequest() },
+        function() { return new ActiveXObject("Msxml2.XMLHTTP") },
+        function() { return new ActiveXObject("Msxml3.XMLHTTP") },
+        function() { return new ActiveXObject("Microsoft.XMLHTTP") }
+    ];
+
+    var createXHR = function() {
+        var xmlhttp = false;
+        var len = XMLHttpFactories.length;
+        for (var i = 0; i < len; i++) {
+            try {
+                xmlhttp = XMLHttpFactories[i]();
+            } catch (e) {
+                continue;
+            }
+            break;
+        }
+        return xmlhttp;
+    };
+
+    var parse = function(req) {
+        var result;
+        try {
+            result = JSON.parse(req.responseText);
+        } catch (e) {
+            result = req.responseText;
+        }
+        return [result, req];
+    };
+
+    self.checkXHR = function() {
+        if (_xhr == null)
+            _xhr = createXHR();
+        return _xhr;
+    };
+
+    self.http = function(params) {
+        var xhr = self.checkXHR();
+        if (!xhr) return;
+
+        var methods = {
+            success: function() {},
+            error: function() {},
+            then: function() {}
+        };
+
+        xhr.open(params.method, params.url, true);
+        xhr.setRequestHeader('Content-type', params.contentType);
+        xhr.onreadystatechange = function() {
+            var req;
+
+            if (xhr.readyState === 4) {
+                req = parse(xhr);
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    methods.success.apply(methods, req);
+                } else {
+                    methods.error.apply(methods, req);
+                }
+                methods.then.apply(methods, req);
+            }
+        };
+
+        xhr.send(params.data);
+
+        var xhrResponse = {
+            success: function(callback) {
+                methods.success = callback;
+                return xhrResponse;
+            },
+            error: function(callback) {
+                methods.error = callback;
+                return xhrResponse;
+            },
+            then: function(callback) {
+                methods.then = callback;
+                return xhrResponse;
+            }
+        };
+
+        return xhrResponse
+    };
+
+    self.post = function(url, data) {
+        return self.http({ method: 'POST', url: url, data: data, contentType: 'application/json' })
+    };
+
+    self.get = function(url, data) {
+        return self.http({ method: 'GET', url: url, data: data, contentType: 'application/json' })
+    };
+
+    self.put = function(url, data) {
+        return self.http({ method: 'PUT', url: url, data: data, contentType: 'application/json' })
+    };
+
+    self.delete = function(url, data) {
+        return self.http({ method: 'DELETE', url: url, data: data, contentType: 'application/json' })
+    };
+
+    return self;
+})();
+var VoxBinder = (function() {
+    var self = {};
+    self.mapping = {};
+
+    self.bindGetterSetter = function(obj, prop, path, element, valueDOM) {
+        if (typeof obj === 'undefined') {
+            return false;
+        }
+        var _index = prop.indexOf('.')
+        if (_index > -1) {
+            return self.bindGetterSetter(obj[prop.substring(0, _index)], prop.substr(_index + 1), path, element);
+        }
+
+        Object.defineProperty(obj, prop, {
+            get: function() {
+                return self.mapping[path]
+            },
+            set: function(val) {
+                element[valueDOM] = val;
+                self.mapping[path] = val;
+            }
+        });
+    };
+
+    self.bindElement = function(element, attrs) {
+        var _path = element.getAttribute(Vox.attrBind);
+        var path = _path.split(/[\.\[\]\"\']{1,2}/);
+        var objectName = path.shift();
+        var object = self.ctx[objectName];
+
+        var tagName = element.tagName.toLowerCase();
+        var typeName = element.type.toLowerCase();
+        var valueDOM = "";
+        var eventType = "";
+
+        if (tagName == 'input' || tagName == 'textarea') {
+            if (typeName == 'text' || typeName == 'textarea') {
+                valueDOM = "value";
+                eventType = "keyup";
+            } else if (typeName == 'checkbox') {
+                valueDOM = "checked";
+                eventType = "change";
+            }
+        } else if (tagName == 'select') {
+            valueDOM = "value";
+            eventType = "change";
+        }
+
+
+        var value = Vox.elementValue(object, path.join('.'));
+        self.mapping[_path] = value;
+        self.bindGetterSetter(object, path.join('.'), _path, element, valueDOM)
+
+
+        // bind event
+        if (valueDOM !== "" && eventType !== "") {
+            element[valueDOM] = value;
+            element.addEventListener(eventType, function() {
+                var val = element[valueDOM];
+                var attrType = element.getAttribute(Vox.attrValueType);
+                if (attrType) {
+                    switch (attrType.toLowerCase()) {
+                        case 'int':
+                            val = parseInt(val);
+                            break;
+                        case 'float':
+                            val = parseFloat(val);
+                            break;
+                        case 'string':
+                        default:
+                            val = val.toString();
+                    }
+                }
+                self.mapping[_path] = val;
+            }, false);
+        }
+    };
+
+    self.init = function(context) {
+        if (context == null) {
+            self.ctx = window;
+        }
+        var elements = Vox.getAllElementsByAttr(Vox.attrBind);
+        for (var i = 0; i < elements.length; i++) {
+            var attrs = elements[i].getAttribute(Vox.attrBind).split('.');
+            self.bindElement(elements[i], attrs)
+        }
+    };
+
+    return self;
+
+})();
+var VoxLocale = (function() {
+    var self = {};
+    var _lang = {};
+
+    self.ctx = null;
+
+    self.getLabelValue = function(obj, prop, path) {
+        if (typeof obj === 'undefined') {
+            return false;
+        }
+        var _index = prop.indexOf('.')
+        if (_index > -1) {
+            return self.getLabelValue(obj[prop.substring(0, _index)], prop.substr(_index + 1), path);
+        }
+        return obj[prop];
+    };
+
+    self.setLabel = function(element) {
+        var _lblPath = element.getAttribute(Vox.attrLabel);
+        var lblPath = _lblPath.split(/[\.\[\]\"\']{1,2}/);
+        if (!_lblPath || _lblPath.trim().legth == 0) return;
+
+        var label = self.getLabelValue(_lang.data, lblPath.join('.'), _lblPath);
+        var tagName = element.tagName.toLowerCase();
+
+        if (tagName == "input" || tagName == "textarea") {
+            element.placeholder = label;
+        } else {
+            element.innerHTML = label;
+        }
+    };
+
+    self.update = function() {
+        var elements = Vox.getAllElementsByAttr(Vox.attrLabel);
+        Vox.forEach(elements, function(e) {
+            self.setLabel(e);
+        })
+    }
+
+    self.setLanguage = function(lang, context) {
+        if (context == null) {
+            self.ctx = window;
+        }
+        _lang = lang;
+        self.update();
+    };
+
+    return self;
+})();
+var VoxValidation = (function() {
+    var self = {};
+    self.ctx = null;
+
+
+    self.invalids = [];
+
+    self.init = function(context) {
+        if (context == null) {
+            self.ctx = window;
+        }
+    };
+
+    self.getVoxdElements = function() {
+        var elements = self.ctx.document.getElementsByTagName('*');
+        self.invalids = [];
+
+        Vox.forEach(elements, function(e) {
+            if (e.getAttribute(Vox.attrPattern)) {
+                self.invalids.push(e)
+            }
+
+            var val = e.getAttribute(Vox.attrRequired);
+            if (val == 'true') {
+                self.invalids.push(e)
+            }
+        });
+    };
+
+    self.validateRegex = function(value, regex) {
+        var re = new RegExp(regex);
+        return re.test(value);
+    };
+
+    self.validateRequired = function() {
+        var result = [];
+        Vox.forEach(self.invalids, function(e) {
+            var tagName = e.tagName.toLowerCase();
+            if (tagName == 'input' || tagName == 'textarea') {
+                var value = e.value.trim();
+                var isRequired = e.getAttribute(Vox.attrRequired);
+                var pattern = e.getAttribute(Vox.attrPattern);
+                var regex = (!isRequired) ? pattern : "^.{0}$";
+
+                if (self.validateRegex(value, regex) == true) {
+                    var r = { 'element': e };
+                    r.message = e.getAttribute(Vox.attrInvalidMessage);
+                    result.push(r);
+                }
+            }
+        });
+        return result;
+    };
+
+    self.validateAll = function(cb) {
+        self.getVoxdElements();
+        cb(self.validateRequired())
+    };
+
+    return self;
+})();
+var Vox = (function() {
+    var self = {};
+    self.ctx = null;
+
+    // binder
+    self.binder = VoxBinder;
+    self.attrBind = 'vox-bind';
+    self.attrValueType = 'vox-value-type';
+
+    // validation
+    self.validation = VoxValidation;
+    self.attrPattern = 'vox-pattern';
+    self.attrRequired = 'vox-required';
+    self.attrInvalidMessage = 'vox-message';
+
+    // ajax
+    self.ajax = VoxAjax;
+
+    // locale
+    self.locale = VoxLocale;
+    self.attrLabel = 'vox-label';
+
+    self.bootstrap = function() {}
+
+    self.forEach = function(arr, cb) {
+        var len = arr.length;
+        for (var i = 0; i < len; i++) {
+            cb(arr[i], i, arr);
+        }
+    };
+
+    self.getAllElementsByAttr = function(attrName) {
+        var elements = [];
+        var all = document.getElementsByTagName('*');
+        for (var i = 0; i < all.length; i++) {
+            if (all[i].getAttribute(attrName) !== null)
+                elements.push(all[i]);
+        }
+        return elements;
+    };
+
+    self.elementValue = function(obj, prop) {
+        if (typeof obj === 'undefined') {
+            return false;
+        }
+        var _index = prop.indexOf('.')
+        if (_index > -1) {
+            return self.elementValue(obj[prop.substring(0, _index)], prop.substr(_index + 1));
+        }
+        return obj[prop];
+    };
+
+    self.getObjectAttr = function(path, obj) {
+        if (typeof obj === "undefined" || obj === null) return;
+        path = path.split(/[\.\[\]\"\']{1,2}/);
+        for (var i = 0, l = path.length; i < l; i++) {
+            if (path[i] === "") continue;
+            obj = obj[path[i]];
+            if (typeof obj === "undefined" || obj === null) return;
+        }
+        return obj;
+    };
+
+    return self;
+})();

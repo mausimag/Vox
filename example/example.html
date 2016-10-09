@@ -2,9 +2,12 @@
 
 <h1>Vox</h1>
 
+<label vox-label="insert_name"></label>
 <input type="text" vox-bind="myObject.name" vox-required="true" vox-message="Invalid name" />
 <br><br>
 
+
+<label vox-label="inner.insert_text"></label>
 <textarea vox-bind="myObject.inner.foo"></textarea>
 <br><br>
 
@@ -22,6 +25,13 @@
 
 <input type="button" onclick="validate()" value="Validate" />
 
+<br><br><br><br><br>
+<h4>Label in placeholder and div</h4>
+<input type="text" vox-label="insert_name" />
+<br><br>
+
+<div vox-label="insert_name"></div>
+<br><br>
 
 <script>
     var myObject = {
@@ -44,4 +54,26 @@
             });
         });
     }
+
+    var ptBr = {
+        name: 'pt-br',
+        data: {
+            'insert_name': 'Insira o nome',
+            inner: {
+                'insert_text': 'Insira o texto'
+            }
+        }
+    }
+
+    var en = {
+        name: 'en',
+        data: {
+            'insert_name': 'Insert Name',
+            inner: {
+                'insert_text': 'Insert text'
+            }
+        }
+    }
+
+    Vox.locale.setLanguage(en);
 </script>
