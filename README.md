@@ -52,3 +52,12 @@ Calling validation:
               alert(o.message);
           });
       });
+      
+      
+AJAX (get, post, put, delete):
+
+    Vox.ajax.get(URL, DATA).success(function(response){
+      console.log(response);
+    }).error(function(err) {
+      console.log(err);
+    });
