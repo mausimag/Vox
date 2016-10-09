@@ -34,7 +34,7 @@ var VoxBinder = (function() {
         return obj[prop];
     };
 
-    self.bindGetterSetter = function(obj, prop, path, element) {
+    self.bindGetterSetter = function(obj, prop, path, element, valueDOM) {
         if (typeof obj === 'undefined') {
             return false;
         }
@@ -48,7 +48,7 @@ var VoxBinder = (function() {
                 return self.mapping[path]
             },
             set: function(val) {
-                element.value = val;
+                element[valueDOM] = val;
                 self.mapping[path] = val;
             }
         });
@@ -60,14 +60,8 @@ var VoxBinder = (function() {
         var objectName = path.shift();
         var object = self.ctx[objectName];
 
-        var value = self.elementValue(object, path.join('.'));
-        self.mapping[_path] = value;
-        self.bindGetterSetter(object, path.join('.'), _path, element)
-
         var tagName = element.tagName.toLowerCase();
         var typeName = element.type.toLowerCase();
-
-        // bind event
         var valueDOM = "";
         var eventType = "";
 
@@ -84,6 +78,13 @@ var VoxBinder = (function() {
             eventType = "change";
         }
 
+
+        var value = self.elementValue(object, path.join('.'));
+        self.mapping[_path] = value;
+        self.bindGetterSetter(object, path.join('.'), _path, element, valueDOM)
+
+
+        // bind event
         if (valueDOM !== "" && eventType !== "") {
             element[valueDOM] = value;
             element.addEventListener(eventType, function() {
