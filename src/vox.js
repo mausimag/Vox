@@ -11,6 +11,8 @@ var Vox = (function() {
     self.attrRequired = 'vox-required';
     self.attrInvalidMessage = 'vox-message';
 
+    self.ajax = VoxAjax;
+
     self.bootstrap = function() {}
 
     self.forEach = function(arr, cb) {
