@@ -1,9 +1,7 @@
 var VoxBinder = (function() {
     var self = {};
 
-    self.mapping = {
-        arr: {}
-    };
+    self.mapping = {};
 
     self.init = function(context) {
         if (context == null) {
