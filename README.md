@@ -45,6 +45,36 @@ Binded, required and error message for validation:
     </select>
     
     
+###Bind table
+
+Table update when insert item to array:
+
+HTML:
+
+    <table id="myTable" border="1"></table>
+
+
+Javascript:
+
+    var myArr = [{
+        'name': 'name1',
+        'age': 21,
+        'inner': {
+            'foo': 'bar1'
+        }
+    }, {
+        'name': 'name2',
+        'age': 22,
+        'inner': {
+            'foo': 'bar2'
+        }
+    } ];
+    
+    Vox.binder.bindTable(myArr, 'myTable', ['name', 'age', 'inner.foo']);
+    
+    myArr.push({'name':'test', 'age':20, 'inner':{'foo':'bar_test'}})
+    
+    
 ###Calling validation:
 
     Vox.validation.validateAll(function(invalids) {
@@ -54,7 +84,7 @@ Binded, required and error message for validation:
       });
       
       
-###AJAX (get, post, put, delete):
+##AJAX (get, post, put, delete):
 
     Vox.ajax.get(URL, DATA).success(function(response){
       console.log(response);
@@ -62,7 +92,7 @@ Binded, required and error message for validation:
       console.log(err);
     });
 
-###Locale
+##Locale
 
 Html - if vox-label is in input, set label as placeholder else set inner value
 
