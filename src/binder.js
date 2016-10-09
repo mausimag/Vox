@@ -1,6 +1,20 @@
 var VoxBinder = (function() {
     var self = {};
-    self.mapping = {};
+
+    self.mapping = {
+        arr: {}
+    };
+
+    self.init = function(context) {
+        if (context == null) {
+            self.ctx = window;
+        }
+        var elements = Vox.getAllElementsByAttr(Vox.attrBind);
+        for (var i = 0; i < elements.length; i++) {
+            var attrs = elements[i].getAttribute(Vox.attrBind).split('.');
+            self.bindElement(elements[i], attrs)
+        }
+    };
 
     self.bindGetterSetter = function(obj, prop, path, element, valueDOM) {
         if (typeof obj === 'undefined') {
@@ -27,8 +41,8 @@ var VoxBinder = (function() {
         var path = _path.split(/[\.\[\]\"\']{1,2}/);
         var objectName = path.shift();
         var object = self.ctx[objectName];
-
         var tagName = element.tagName.toLowerCase();
+
         var typeName = element.type.toLowerCase();
         var valueDOM = "";
         var eventType = "";
@@ -46,11 +60,9 @@ var VoxBinder = (function() {
             eventType = "change";
         }
 
-
         var value = Vox.elementValue(object, path.join('.'));
         self.mapping[_path] = value;
         self.bindGetterSetter(object, path.join('.'), _path, element, valueDOM)
-
 
         // bind event
         if (valueDOM !== "" && eventType !== "") {
@@ -76,15 +88,40 @@ var VoxBinder = (function() {
         }
     };
 
-    self.init = function(context) {
-        if (context == null) {
-            self.ctx = window;
+    // table binder
+    (function() {
+        var _push = Array.prototype.push;
+        Array.prototype.push = function() {
+            ins = _push.apply(this, arguments);
+            if (this._vox_observe) {
+                var tableId = this._vox_observe;
+                var values = this._vox_values;
+                Vox.binder.insertRow(this[this.length - 1], tableId, values);
+            }
+            return ins;
         }
-        var elements = Vox.getAllElementsByAttr(Vox.attrBind);
-        for (var i = 0; i < elements.length; i++) {
-            var attrs = elements[i].getAttribute(Vox.attrBind).split('.');
-            self.bindElement(elements[i], attrs)
+    })();
+
+    self.insertRow = function(e, tableId, values) {
+        var table = self.ctx.document.getElementById(tableId);
+        var rowIdx = table.rows.length;
+        var cellLen = values.length;
+        var row = table.insertRow(rowIdx);
+
+        for (var i = 0; i < cellLen; i++) {
+            var newcell = row.insertCell(i);
+            var value = Vox.getValuePath(e, values[i]);
+            newcell.innerHTML = value;
         }
+    };
+
+    self.bindTable = function(arr, tableId, values) {
+        arr._vox_observe = tableId;
+        arr._vox_values = values;
+
+        Vox.forEach(arr, function(e) {
+            self.insertRow(e, tableId, values);
+        });
     };
 
     return self;

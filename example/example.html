@@ -33,6 +33,23 @@
 <div vox-label="insert_name"></div>
 <br><br>
 
+
+<br><br><br><br><br>
+<h4>Table bind</h4>
+<table id="myArr" border="1">
+    <thead>
+        <tr>
+            <td>Name</td>
+            <td>Age</td>
+            <td>Inner</td>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+
 <script>
     var myObject = {
         name: "myname",
@@ -76,4 +93,26 @@
     }
 
     Vox.locale.setLanguage(en);
+
+    var myArr = [{
+        'name': 'name1',
+        'age': 21,
+        'inner': {
+            'foo': 'bar1'
+        }
+    }, {
+        'name': 'name2',
+        'age': 22,
+        'inner': {
+            'foo': 'bar2'
+        }
+    }, {
+        'name': 'name3',
+        'age': 23,
+        'inner': {
+            'foo': 'bar3'
+        }
+    }, ];
+
+    Vox.binder.bindTable(myArr, 'myArr', ['name', 'age', 'inner.foo']);
 </script>
