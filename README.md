@@ -1,4 +1,6 @@
-# Vox
+<img src="https://s13.postimg.org/m5ufoeelz/Logomakr_2_Fx_Qcm.png" alt="VoxJS logo" align="center"/>
+
+
 Small and simply two way data binding and validator
 
 
