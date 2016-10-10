@@ -9,9 +9,20 @@ var srcFolder = './src/*.js';
 gulp.task('build', function() {
     return gulp
         .src([srcFolder])
-        .pipe(uglify())
         .pipe(concat('vox.js'))
-        .pipe(gulp.dest('build/'));
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('build-min', function() {
+    return gulp
+        .src([srcFolder])
+        .pipe(uglify())
+        .pipe(concat('vox.min.js'))
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('build-all', function() {
+    return gulp.start('build', 'build-min');
 });
 
 gulp.task('watch', function() {
