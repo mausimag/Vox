@@ -125,7 +125,7 @@ var VoxBinder = (function() {
         }
         var _index = prop.indexOf('.')
         if (_index > -1) {
-            return self.bindGetterSetter(obj[prop.substring(0, _index)], prop.substr(_index + 1), path, element);
+            return self.bindGetterSetter(obj[prop.substring(0, _index)], prop.substr(_index + 1), path, element, valueDOM);
         }
 
         Object.defineProperty(obj, prop, {
