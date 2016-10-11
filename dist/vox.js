@@ -112,10 +112,30 @@ var VoxBinder = (function() {
         if (context == null) {
             self.ctx = window;
         }
+
         var elements = Vox.getAllElementsByAttr(Vox.attrBind);
         for (var i = 0; i < elements.length; i++) {
-            var attrs = elements[i].getAttribute(Vox.attrBind).split('.');
-            self.bindElement(elements[i], attrs)
+            self.bindElement(elements[i])
+        }
+
+        self.ctx.addEventListener("DOMNodeInserted", function(event) {
+            if (event.srcElement.attributes) {
+                if (typeof event.srcElement.attributes[Vox.attrBind] !== 'undefined') {
+                    console.log(event.srcElement)
+                    self.bindElement(event.srcElement);
+                }
+            }
+        });
+
+        var _push = Array.prototype.push;
+        Array.prototype.push = function() {
+            ins = _push.apply(this, arguments);
+            if (this._vox_observe) {
+                var tableId = this._vox_observe;
+                var values = this._vox_values;
+                Vox.binder.insertRow(this[this.length - 1], tableId, values);
+            }
+            return ins;
         }
     };
 
@@ -139,7 +159,7 @@ var VoxBinder = (function() {
         });
     };
 
-    self.bindElement = function(element, attrs) {
+    self.bindElement = function(element) {
         var _path = element.getAttribute(Vox.attrBind);
         var path = _path.split(/[\.\[\]\"\']{1,2}/);
         var objectName = path.shift();
@@ -190,20 +210,6 @@ var VoxBinder = (function() {
             }, false);
         }
     };
-
-    // table binder
-    (function() {
-        var _push = Array.prototype.push;
-        Array.prototype.push = function() {
-            ins = _push.apply(this, arguments);
-            if (this._vox_observe) {
-                var tableId = this._vox_observe;
-                var values = this._vox_values;
-                Vox.binder.insertRow(this[this.length - 1], tableId, values);
-            }
-            return ins;
-        }
-    })();
 
     self.insertRow = function(e, tableId, values) {
         var table = self.ctx.document.getElementById(tableId);
@@ -361,6 +367,8 @@ var Vox = (function() {
     // locale
     self.locale = VoxLocale;
     self.attrLabel = 'vox-label';
+
+    self.listeners = [];
 
     self.bootstrap = function() {}
 

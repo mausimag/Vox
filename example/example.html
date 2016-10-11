@@ -3,7 +3,7 @@
 <h1>Vox</h1>
 
 <label vox-label="insert_name"></label>
-<input type="text" vox-bind="myObject.name" vox-required="true" vox-message="Invalid name" />
+<!--<input type="text" vox-bind="myObject.name" vox-required="true" vox-message="Invalid name" />-->
 <br><br>
 
 
@@ -30,7 +30,8 @@
 <input type="text" vox-label="insert_name" />
 <br><br>
 
-<div vox-label="insert_name"></div>
+<input type="button" onclick="  add('text');" value="ADDD" />
+<div id="dvi" vox-label="insert_name"></div>
 <br><br>
 
 
@@ -113,6 +114,27 @@
             'foo': 'bar3'
         }
     }, ];
+
+    function add(type) {
+        //Create an input type dynamically.   
+        var element = document.createElement("input");
+        //Assign different attributes to the element. 
+        element.type = type;
+        //element.value = type; // Really? You want the default value to be the type string?
+        element.name = type; // And the name too?
+        element.setAttribute("vox-bind", "myObject.name");
+
+        element.onclick = function() { // Note this is a function
+            alert("blabla");
+        };
+
+        var foo = document.getElementById("dvi");
+        //Append the element in page (in span).  
+        foo.appendChild(element);
+        console.log('a')
+    }
+
+
 
     Vox.binder.bindTable(myArr, 'myArr', ['name', 'age', 'inner.foo']);
 </script>

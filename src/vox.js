@@ -20,6 +20,8 @@ var Vox = (function() {
     self.locale = VoxLocale;
     self.attrLabel = 'vox-label';
 
+    self.listeners = [];
+
     self.bootstrap = function() {}
 
     self.forEach = function(arr, cb) {
