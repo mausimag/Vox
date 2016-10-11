@@ -3,6 +3,15 @@ var VoxBinder = (function() {
 
     self.mapping = {};
 
+    self.elementDef = {
+        input: {
+            text: { valueDOM: 'value', eventType: 'keyup' },
+            checkbox: { valueDOM: 'checked', eventType: 'change' }
+        },
+        textarea: { valueDOM: 'value', eventType: 'keyup' },
+        select: { valueDOM: 'value', eventType: 'change' }
+    };
+
     self.init = function(context) {
         if (context == null) {
             self.ctx = window;
@@ -48,33 +57,22 @@ var VoxBinder = (function() {
         var objectName = path.shift();
         var object = self.ctx[objectName];
         var tagName = element.tagName.toLowerCase();
-
         var typeName = element.type.toLowerCase();
-        var valueDOM = "";
-        var eventType = "";
 
-        if (tagName == 'input' || tagName == 'textarea') {
-            if (typeName == 'text' || typeName == 'textarea') {
-                valueDOM = "value";
-                eventType = "keyup";
-            } else if (typeName == 'checkbox') {
-                valueDOM = "checked";
-                eventType = "change";
-            }
-        } else if (tagName == 'select') {
-            valueDOM = "value";
-            eventType = "change";
+        var elementDef = null;
+        if (self.elementDef[tagName] !== 'undefined') {
+            elementDef = (tagName == 'input') ? self.elementDef.input[typeName] : self.elementDef[tagName];
         }
 
         var value = Vox.elementValue(object, path.join('.'));
         self.mapping[_path] = value;
-        self.bindGetterSetter(object, path.join('.'), _path, element, valueDOM)
+        self.bindGetterSetter(object, path.join('.'), _path, element, elementDef.valueDOM)
 
         // bind event
-        if (valueDOM !== "" && eventType !== "") {
-            element[valueDOM] = value;
-            element.addEventListener(eventType, function() {
-                var val = element[valueDOM];
+        if (elementDef != null) {
+            element[elementDef.valueDOM] = value;
+            element.addEventListener(elementDef.eventType, function() {
+                var val = element[elementDef.valueDOM];
                 var attrType = element.getAttribute(Vox.attrValueType);
                 if (attrType) {
                     switch (attrType.toLowerCase()) {
