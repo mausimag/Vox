@@ -40,6 +40,10 @@ var VoxBinder = (function() {
             return self.bindGetterSetter(obj[prop.substring(0, _index)], prop.substr(_index + 1), path, element, valueDOM);
         }
 
+        if (typeof obj[prop] === 'undefined') {
+            obj[prop] = element.value;
+        }
+
         Object.defineProperty(obj, prop, {
             get: function() {
                 return self.mapping[path]
@@ -56,8 +60,8 @@ var VoxBinder = (function() {
         var path = _path.split(/[\.\[\]\"\']{1,2}/);
         var objectName = path.shift();
         var object = self.ctx[objectName];
-        var tagName = element.tagName.toLowerCase();
-        var typeName = element.type.toLowerCase();
+        var tagName = element.tagName ? element.tagName.toLowerCase() : "input";
+        var typeName = element.typeName ? element.typeName.toLowerCase() : "text";
 
         var elementDef = null;
         if (self.elementDef[tagName] !== 'undefined') {
