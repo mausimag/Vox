@@ -121,22 +121,10 @@ var VoxBinder = (function() {
         self.ctx.addEventListener("DOMNodeInserted", function(event) {
             if (event.srcElement.attributes) {
                 if (typeof event.srcElement.attributes[Vox.attrBind] !== 'undefined') {
-                    console.log(event.srcElement)
                     self.bindElement(event.srcElement);
                 }
             }
         });
-
-        var _push = Array.prototype.push;
-        Array.prototype.push = function() {
-            ins = _push.apply(this, arguments);
-            if (this._vox_observe) {
-                var tableId = this._vox_observe;
-                var values = this._vox_values;
-                Vox.binder.insertRow(this[this.length - 1], tableId, values);
-            }
-            return ins;
-        }
     };
 
     self.bindGetterSetter = function(obj, prop, path, element, valueDOM) {
@@ -211,6 +199,42 @@ var VoxBinder = (function() {
         }
     };
 
+
+    /**
+     * Table operations
+     */
+
+    var _push = Array.prototype.push;
+    var _pop = Array.prototype.pop;
+    var _splice = Array.prototype.splice;
+
+    Array.prototype.push = function() {
+        ins = _push.apply(this, arguments);
+        if (this._vox_observe) {
+            var tableId = this._vox_observe;
+            var values = this._vox_values;
+            Vox.binder.insertRow(this[this.length - 1], tableId, values);
+        }
+        return ins;
+    };
+
+    Array.prototype.pop = function() {
+        e = _pop.apply(this, arguments);
+        if (this._vox_observe) {
+            self.removeRow(this._vox_observe);
+        }
+        return e;
+    };
+
+    Array.prototype.splice = function() {
+        e = _splice.apply(this, arguments);
+        if (this._vox_observe) {
+            var count = (arguments.length > 1) ? arguments[1] : 1;
+            self.removeRow(this._vox_observe, arguments[0], count);
+        }
+        return e;
+    };
+
     self.insertRow = function(e, tableId, values) {
         var table = self.ctx.document.getElementById(tableId);
         var rowIdx = table.rows.length;
@@ -221,6 +245,24 @@ var VoxBinder = (function() {
             var newcell = row.insertCell(i);
             var value = Vox.getValuePath(e, values[i]);
             newcell.innerHTML = value;
+        }
+    };
+
+    self.removeRow = function(tableId, index, count) {
+        var table = self.ctx.document.getElementById(tableId);
+        if (!index) {
+            table.deleteRow(table.rows.length - 1)
+        } else {
+            if (count) {
+                 var pos = index + 1;
+                 var removed = 0;
+                 while (removed < count) {
+                     table.deleteRow(pos)
+                     removed++;
+                 }
+            } else {
+                table.deleteRow(index)
+            }
         }
     };
 
