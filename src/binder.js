@@ -17,10 +17,7 @@ var VoxBinder = (function() {
             self.ctx = window;
         }
 
-        var elements = Vox.getAllElementsByAttr(Vox.attrBind);
-        for (var i = 0; i < elements.length; i++) {
-            self.bindElement(elements[i])
-        }
+        self.update();
 
         self.ctx.addEventListener("DOMNodeInserted", function(event) {
             if (event.srcElement.attributes) {
@@ -29,6 +26,13 @@ var VoxBinder = (function() {
                 }
             }
         });
+    };
+
+    self.update = function() {
+        var elements = Vox.getAllElementsByAttr(Vox.attrBind);
+        for (var i = 0; i < elements.length; i++) {
+            self.bindElement(elements[i])
+        }
     };
 
     self.bindGetterSetter = function(obj, prop, path, element, valueDOM) {
