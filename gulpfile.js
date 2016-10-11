@@ -6,23 +6,37 @@ var watch = require('gulp-watch');
 
 var srcFolder = './src/*.js';
 
-gulp.task('build', function() {
+gulp.task('build-base', function() {
     return gulp
-        .src([srcFolder])
+        .src(['./src/*.js'])
         .pipe(concat('vox.js'))
         .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('build-min', function() {
+gulp.task('build-base-min', function() {
     return gulp
-        .src([srcFolder])
-        .pipe(uglify())
+        .src(['./src/*.js'])
         .pipe(concat('vox.min.js'))
         .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('build-all', function() {
-    return gulp.start('build', 'build-min');
+    return gulp
+        .src(['./src/**/*.js'])
+        .pipe(concat('vox.all.js'))
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('build-all-min', function() {
+    return gulp
+        .src(['./src/**/*.js'])
+        .pipe(uglify())
+        .pipe(concat('vox.all.min.js'))
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('build', function() {
+    return gulp.start('build-base', 'build-base-min', 'build-all', 'build-all-min');
 });
 
 gulp.task('watch', function() {
@@ -31,3 +45,7 @@ gulp.task('watch', function() {
         gulp.run('build');
     });
 });
+
+/***
+ * Build plugins
+ */

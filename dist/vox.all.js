@@ -472,3 +472,4 @@ var Vox = (function() {
 
     return self;
 })();
+alert(0);
