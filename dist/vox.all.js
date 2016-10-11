@@ -472,4 +472,4 @@ var Vox = (function() {
 
     return self;
 })();
-VoxBinder.elementDef.input['ons-input'] = { valueDOM: 'value', eventType: 'keyup' }
+VoxBinder.elementDef['ons-input'] = { valueDOM: 'value', eventType: 'keyup' }

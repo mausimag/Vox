@@ -1,1 +1,1 @@
-VoxBinder.elementDef.input['ons-input'] = { valueDOM: 'value', eventType: 'keyup' }
+VoxBinder.elementDef['ons-input'] = { valueDOM: 'value', eventType: 'keyup' }
