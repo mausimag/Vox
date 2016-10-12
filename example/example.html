@@ -115,22 +115,4 @@
     }, ];
 
     Vox.binder.bindTable(myArr, 'myArr', ['name', 'age', 'inner.foo']);
-
-    var q = Vox.queue.create({
-        name: 'test1'
-    });
-
-
-    q.processor(function() {
-        console.log('processor:');
-        postMessage({
-            foo: "bar"
-        });
-    });
-
-    q.done(function(e) {
-        console.log('Result:' + e.foo);
-    });
-
-    q.enqueue('value');
 </script>

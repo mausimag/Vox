@@ -55,14 +55,6 @@ var VoxBinder = (function() {
         var path = _path.split(/[\.\[\]\"\']{1,2}/);
         var objectName = path.shift();
         var object = self.ctx[objectName];
-        //var tagName = element.tagName ? element.tagName.toLowerCase() : "input";
-        //var typeName = element.type ? element.type.toLowerCase() : "text";
-
-        /*var elementDef = null;
-        if (Vox.elementDef[tagName] !== 'undefined') {
-            elementDef = (tagName.indexOf('input') > -1) ? Vox.elementDef[tagName][typeName] : Vox.elementDef[tagName];
-        }*/
-
         var elementDef = Vox.getElementDef(element);
 
         var value = Vox.elementValue(object, path.join('.'));
