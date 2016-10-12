@@ -150,7 +150,7 @@ var VoxBinder = (function() {
         }
 
         if (typeof obj[prop] === 'undefined') {
-            obj[prop] = element.value;
+            obj[prop] = (typeof element.value === 'undefined') ? "" : element.value;
         }
 
         Object.defineProperty(obj, prop, {
@@ -170,11 +170,11 @@ var VoxBinder = (function() {
         var objectName = path.shift();
         var object = self.ctx[objectName];
         var tagName = element.tagName ? element.tagName.toLowerCase() : "input";
-        var typeName = element.typeName ? element.typeName.toLowerCase() : "text";
+        var typeName = element.type ? element.type.toLowerCase() : "text";
 
         var elementDef = null;
         if (self.elementDef[tagName] !== 'undefined') {
-            elementDef = (tagName == 'input') ? self.elementDef.input[typeName] : self.elementDef[tagName];
+            elementDef = (tagName.indexOf('input') > -1) ? self.elementDef[tagName][typeName] : self.elementDef[tagName];
         }
 
         var value = Vox.elementValue(object, path.join('.'));
