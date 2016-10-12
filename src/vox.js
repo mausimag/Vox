@@ -94,5 +94,35 @@ var Vox = (function() {
         return obj[prop];
     };
 
+    self.toFormattedCurrency = function(val) {
+        val = val.toString();
+        var n = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+        var initValue = val;
+        var clean = initValue.replace(/\./g, '').replace(/,/g, '').replace(/^0+/, '');
+
+        if (!clean.match(/^([0-9]+$)/g)) {
+            return '';
+        }
+
+        if (1 == 1) {
+            var value = clean;
+            if (value.length == 2) value = '0' + value;
+            if (value.length == 1) value = '00' + value;
+
+            var strf = '';
+            var len = value.length;
+            for (var i = 0; i < len; i++) {
+                var sep = '';
+                if (i == 2) sep = ',';
+                if (i > 3 && (i + 1) % 3 == 0) sep = '.';
+                strf = value.substring(value.length - 1 - i, value.length - i) + sep + strf;
+            }
+
+            initValue = strf;
+        }
+
+        return initValue;
+    }
+
     return self;
 })();

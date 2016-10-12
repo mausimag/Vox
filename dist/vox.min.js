@@ -141,18 +141,41 @@ var VoxBinder = (function() {
         }
 
         if (typeof obj[prop] === 'undefined') {
-            obj[prop] = (typeof element.value === 'undefined') ? "" : element.value;
+            obj[prop] = (typeof element.value === 'undefined' || !element.value) ? "" : element.value;
         }
 
         Object.defineProperty(obj, prop, {
             get: function() {
-                return self.mapping[path]
+                return self.mapping[path];
             },
             set: function(val) {
+                var attrType = element.getAttribute(Vox.attrValueType);
+                val = Vox.binder.castValue(attrType, val);
                 element[valueDOM] = val;
                 self.mapping[path] = val;
             }
         });
+    };
+
+    self.castValue = function(attrType, value) {
+        var val = value;
+        if (attrType) {
+            switch (attrType.toLowerCase()) {
+                case 'int':
+                    val = parseInt(val);
+                    break;
+                case 'float':
+                    val = parseFloat(val);
+                    break;
+                case 'currency':
+                    val = Vox.toFormattedCurrency(val);
+                    break;
+                case 'string':
+                default:
+                    val = val.toString();
+            }
+        }
+        return val;
     };
 
     self.bindElement = function(element) {
@@ -160,14 +183,6 @@ var VoxBinder = (function() {
         var path = _path.split(/[\.\[\]\"\']{1,2}/);
         var objectName = path.shift();
         var object = self.ctx[objectName];
-        //var tagName = element.tagName ? element.tagName.toLowerCase() : "input";
-        //var typeName = element.type ? element.type.toLowerCase() : "text";
-
-        /*var elementDef = null;
-        if (Vox.elementDef[tagName] !== 'undefined') {
-            elementDef = (tagName.indexOf('input') > -1) ? Vox.elementDef[tagName][typeName] : Vox.elementDef[tagName];
-        }*/
-
         var elementDef = Vox.getElementDef(element);
 
         var value = Vox.elementValue(object, path.join('.'));
@@ -180,19 +195,8 @@ var VoxBinder = (function() {
             element.addEventListener(elementDef.eventType, function() {
                 var val = element[elementDef.valueDOM];
                 var attrType = element.getAttribute(Vox.attrValueType);
-                if (attrType) {
-                    switch (attrType.toLowerCase()) {
-                        case 'int':
-                            val = parseInt(val);
-                            break;
-                        case 'float':
-                            val = parseFloat(val);
-                            break;
-                        case 'string':
-                        default:
-                            val = val.toString();
-                    }
-                }
+                val = Vox.binder.castValue(attrType, val);
+                element.value = val;
                 self.mapping[_path] = val;
             }, false);
         }
@@ -510,6 +514,36 @@ var Vox = (function() {
         }
         return obj[prop];
     };
+
+    self.toFormattedCurrency = function(val) {
+        val = val.toString();
+        var n = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+        var initValue = val;
+        var clean = initValue.replace(/\./g, '').replace(/,/g, '').replace(/^0+/, '');
+
+        if (!clean.match(/^([0-9]+$)/g)) {
+            return '';
+        }
+
+        if (1 == 1) {
+            var value = clean;
+            if (value.length == 2) value = '0' + value;
+            if (value.length == 1) value = '00' + value;
+
+            var strf = '';
+            var len = value.length;
+            for (var i = 0; i < len; i++) {
+                var sep = '';
+                if (i == 2) sep = ',';
+                if (i > 3 && (i + 1) % 3 == 0) sep = '.';
+                strf = value.substring(value.length - 1 - i, value.length - i) + sep + strf;
+            }
+
+            initValue = strf;
+        }
+
+        return initValue;
+    }
 
     return self;
 })();

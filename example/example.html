@@ -7,6 +7,10 @@
 <br><br>
 
 
+<label>Money</label>
+<input type="text" vox-bind="myObject.money" vox-value-type="currency" />
+<br><br>
+
 <label vox-label="inner.insert_text"></label>
 <textarea vox-bind="myObject.inner.foo"></textarea>
 <br><br>
@@ -57,7 +61,8 @@
         inner: {
             foo: 'bar'
         },
-        option: 2
+        option: 2,
+        money: '1,50'
     };
 
     Vox.bootstrap();

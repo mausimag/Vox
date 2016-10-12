@@ -36,18 +36,41 @@ var VoxBinder = (function() {
         }
 
         if (typeof obj[prop] === 'undefined') {
-            obj[prop] = (typeof element.value === 'undefined') ? "" : element.value;
+            obj[prop] = (typeof element.value === 'undefined' || !element.value) ? "" : element.value;
         }
 
         Object.defineProperty(obj, prop, {
             get: function() {
-                return self.mapping[path]
+                return self.mapping[path];
             },
             set: function(val) {
+                var attrType = element.getAttribute(Vox.attrValueType);
+                val = Vox.binder.castValue(attrType, val);
                 element[valueDOM] = val;
                 self.mapping[path] = val;
             }
         });
+    };
+
+    self.castValue = function(attrType, value) {
+        var val = value;
+        if (attrType) {
+            switch (attrType.toLowerCase()) {
+                case 'int':
+                    val = parseInt(val);
+                    break;
+                case 'float':
+                    val = parseFloat(val);
+                    break;
+                case 'currency':
+                    val = Vox.toFormattedCurrency(val);
+                    break;
+                case 'string':
+                default:
+                    val = val.toString();
+            }
+        }
+        return val;
     };
 
     self.bindElement = function(element) {
@@ -67,19 +90,8 @@ var VoxBinder = (function() {
             element.addEventListener(elementDef.eventType, function() {
                 var val = element[elementDef.valueDOM];
                 var attrType = element.getAttribute(Vox.attrValueType);
-                if (attrType) {
-                    switch (attrType.toLowerCase()) {
-                        case 'int':
-                            val = parseInt(val);
-                            break;
-                        case 'float':
-                            val = parseFloat(val);
-                            break;
-                        case 'string':
-                        default:
-                            val = val.toString();
-                    }
-                }
+                val = Vox.binder.castValue(attrType, val);
+                element.value = val;
                 self.mapping[_path] = val;
             }, false);
         }
