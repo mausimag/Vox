@@ -24,6 +24,26 @@ var Vox = (function() {
 
     self.bootstrap = function() {}
 
+    self.elementDef = {
+        input: {
+            text: { valueDOM: 'value', eventType: 'keyup' },
+            checkbox: { valueDOM: 'checked', eventType: 'change' }
+        },
+        textarea: { valueDOM: 'value', eventType: 'keyup' },
+        select: { valueDOM: 'value', eventType: 'change' }
+    };
+
+    self.getElementDef = function(e) {
+        var tagName = e.tagName ? e.tagName.toLowerCase() : "input";
+        var typeName = e.type ? e.type.toLowerCase() : "text";
+
+        var elementDef = null;
+        if (self.elementDef[tagName] !== 'undefined') {
+            elementDef = (tagName.indexOf('input') > -1) ? self.elementDef[tagName][typeName] : self.elementDef[tagName];
+        }
+        return elementDef;
+    }
+
     self.forEach = function(arr, cb) {
         var len = arr.length;
         for (var i = 0; i < len; i++) {

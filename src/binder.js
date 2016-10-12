@@ -3,15 +3,6 @@ var VoxBinder = (function() {
 
     self.mapping = {};
 
-    self.elementDef = {
-        input: {
-            text: { valueDOM: 'value', eventType: 'keyup' },
-            checkbox: { valueDOM: 'checked', eventType: 'change' }
-        },
-        textarea: { valueDOM: 'value', eventType: 'keyup' },
-        select: { valueDOM: 'value', eventType: 'change' }
-    };
-
     self.init = function(context) {
         if (context == null) {
             self.ctx = window;
@@ -64,13 +55,15 @@ var VoxBinder = (function() {
         var path = _path.split(/[\.\[\]\"\']{1,2}/);
         var objectName = path.shift();
         var object = self.ctx[objectName];
-        var tagName = element.tagName ? element.tagName.toLowerCase() : "input";
-        var typeName = element.type ? element.type.toLowerCase() : "text";
+        //var tagName = element.tagName ? element.tagName.toLowerCase() : "input";
+        //var typeName = element.type ? element.type.toLowerCase() : "text";
 
-        var elementDef = null;
-        if (self.elementDef[tagName] !== 'undefined') {
-            elementDef = (tagName.indexOf('input') > -1) ? self.elementDef[tagName][typeName] : self.elementDef[tagName];
-        }
+        /*var elementDef = null;
+        if (Vox.elementDef[tagName] !== 'undefined') {
+            elementDef = (tagName.indexOf('input') > -1) ? Vox.elementDef[tagName][typeName] : Vox.elementDef[tagName];
+        }*/
+
+        var elementDef = Vox.getElementDef(element);
 
         var value = Vox.elementValue(object, path.join('.'));
         self.mapping[_path] = value;

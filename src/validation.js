@@ -2,7 +2,6 @@ var VoxValidation = (function() {
     var self = {};
     self.ctx = null;
 
-
     self.invalids = [];
 
     self.init = function(context) {
@@ -11,17 +10,12 @@ var VoxValidation = (function() {
         }
     };
 
-    self.getVoxdElements = function() {
-        var elements = self.ctx.document.getElementsByTagName('*');
+    self.getVoxdElements = function(src) {
+        var elements = src.getElementsByTagName('*');
         self.invalids = [];
 
         Vox.forEach(elements, function(e) {
-            if (e.getAttribute(Vox.attrPattern)) {
-                self.invalids.push(e)
-            }
-
-            var val = e.getAttribute(Vox.attrRequired);
-            if (val == 'true') {
+            if (e.getAttribute(Vox.attrPattern) || e.getAttribute(Vox.attrRequired) == 'true') {
                 self.invalids.push(e)
             }
         });
@@ -35,26 +29,25 @@ var VoxValidation = (function() {
     self.validateRequired = function() {
         var result = [];
         Vox.forEach(self.invalids, function(e) {
-            var tagName = e.tagName.toLowerCase();
-            if (tagName == 'input' || tagName == 'textarea') {
-                var value = e.value.trim();
-                var isRequired = e.getAttribute(Vox.attrRequired);
-                var pattern = e.getAttribute(Vox.attrPattern);
-                var regex = (!isRequired) ? pattern : "^.{0}$";
+            var def = Vox.getElementDef(e);
+            var value = e[def.valueDOM].trim();
+            var regex = (!e.getAttribute(Vox.attrRequired)) ? e.getAttribute(Vox.attrPattern) : "^.{0}$";
 
-                if (self.validateRegex(value, regex) == true) {
-                    var r = { 'element': e };
-                    r.message = e.getAttribute(Vox.attrInvalidMessage);
-                    result.push(r);
-                }
+            if (self.validateRegex(value, regex) == true) {
+                var r = { 'element': e };
+                r.message = e.getAttribute(Vox.attrInvalidMessage);
+                result.push(r);
             }
         });
         return result;
     };
 
-    self.validateAll = function(cb) {
-        self.getVoxdElements();
-        cb(self.validateRequired())
+    self.validateAll = function(src) {
+        if (src !== 'undefined') {
+            src = window.document;
+        }
+        self.getVoxdElements(src);
+        return self.validateRequired();
     };
 
     return self;
