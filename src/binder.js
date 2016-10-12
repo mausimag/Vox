@@ -41,13 +41,13 @@ var VoxBinder = (function() {
 
         Object.defineProperty(obj, prop, {
             get: function() {
-                return self.mapping[path];
+                return Vox.binder.mapping[path];
             },
             set: function(val) {
                 var attrType = element.getAttribute(Vox.attrValueType);
                 val = Vox.binder.castValue(attrType, val);
                 element[valueDOM] = val;
-                self.mapping[path] = val;
+                Vox.binder.mapping[path] = val;
             }
         });
     };
@@ -86,6 +86,10 @@ var VoxBinder = (function() {
 
         // bind event
         if (elementDef != null) {
+            // happens when Vox creats a property that not exists
+            if (typeof value === 'undefined') {
+                value = '';
+            }
             element[elementDef.valueDOM] = value;
             element.addEventListener(elementDef.eventType, function() {
                 var val = element[elementDef.valueDOM];
