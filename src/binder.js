@@ -1,7 +1,7 @@
 var VoxBinder = (function() {
     var self = {};
 
-    self.mapping = {};
+    self._mapping = {};
 
     self.init = function(context) {
         if (context == null) {
@@ -41,36 +41,27 @@ var VoxBinder = (function() {
 
         Object.defineProperty(obj, prop, {
             get: function() {
-                return Vox.binder.mapping[path];
+                return Vox.binder._mapping[path];
             },
             set: function(val) {
                 var attrType = element.getAttribute(Vox.attrValueType);
+                console.log(val)
                 val = Vox.binder.castValue(attrType, val);
                 element[valueDOM] = val;
-                Vox.binder.mapping[path] = val;
+                Vox.binder._mapping[path] = val;
             }
         });
     };
 
     self.castValue = function(attrType, value) {
-        var val = value;
-        if (attrType) {
-            switch (attrType.toLowerCase()) {
-                case 'int':
-                    val = parseInt(val);
-                    break;
-                case 'float':
-                    val = parseFloat(val);
-                    break;
-                case 'currency':
-                    val = Vox.toFormattedCurrency(val);
-                    break;
-                case 'string':
-                default:
-                    val = val.toString();
+        var typef = Vox._typeDef['string'];
+        if (attrType != null) {
+            attrType = attrType.toLowerCase();
+            if (typeof Vox._typeDef[attrType] !== 'undefined') {
+                typef = Vox._typeDef[attrType];
             }
         }
-        return val;
+        return typef(value);
     };
 
     self.bindElement = function(element) {
@@ -81,7 +72,7 @@ var VoxBinder = (function() {
         var elementDef = Vox.getElementDef(element);
 
         var value = Vox.elementValue(object, path.join('.'));
-        self.mapping[_path] = value;
+        self._mapping[_path] = value;
         self.bindGetterSetter(object, path.join('.'), _path, element, elementDef.valueDOM)
 
         // bind event
@@ -96,7 +87,7 @@ var VoxBinder = (function() {
                 var attrType = element.getAttribute(Vox.attrValueType);
                 val = Vox.binder.castValue(attrType, val);
                 element.value = val;
-                self.mapping[_path] = val;
+                self._mapping[_path] = val;
             }, false);
         }
     };

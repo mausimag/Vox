@@ -106,7 +106,7 @@ var VoxAjax = (function() {
 var VoxBinder = (function() {
     var self = {};
 
-    self.mapping = {};
+    self._mapping = {};
 
     self.init = function(context) {
         if (context == null) {
@@ -146,19 +146,29 @@ var VoxBinder = (function() {
 
         Object.defineProperty(obj, prop, {
             get: function() {
-                return Vox.binder.mapping[path];
+                return Vox.binder._mapping[path];
             },
             set: function(val) {
                 var attrType = element.getAttribute(Vox.attrValueType);
+                console.log(val)
                 val = Vox.binder.castValue(attrType, val);
                 element[valueDOM] = val;
-                Vox.binder.mapping[path] = val;
+                Vox.binder._mapping[path] = val;
             }
         });
     };
 
     self.castValue = function(attrType, value) {
-        var val = value;
+        var typef = Vox._typeDef['string'];
+        if (attrType != null) {
+            attrType = attrType.toLowerCase();
+            if (typeof Vox._typeDef[attrType] !== 'undefined') {
+                typef = Vox._typeDef[attrType];
+            }
+        }
+
+        return typef(value);
+        /*var val = value;
         if (attrType) {
             switch (attrType.toLowerCase()) {
                 case 'int':
@@ -175,7 +185,7 @@ var VoxBinder = (function() {
                     val = val.toString();
             }
         }
-        return val;
+        return val;*/
     };
 
     self.bindElement = function(element) {
@@ -186,7 +196,7 @@ var VoxBinder = (function() {
         var elementDef = Vox.getElementDef(element);
 
         var value = Vox.elementValue(object, path.join('.'));
-        self.mapping[_path] = value;
+        self._mapping[_path] = value;
         self.bindGetterSetter(object, path.join('.'), _path, element, elementDef.valueDOM)
 
         // bind event
@@ -201,7 +211,7 @@ var VoxBinder = (function() {
                 var attrType = element.getAttribute(Vox.attrValueType);
                 val = Vox.binder.castValue(attrType, val);
                 element.value = val;
-                self.mapping[_path] = val;
+                self._mapping[_path] = val;
             }, false);
         }
     };
@@ -320,6 +330,13 @@ if (!Object.assign) {
         }
     });
 }
+var VoxFormula = (function() {
+    var self = {};
+
+    self.ctx = {};
+
+    return self;
+})();
 var VoxLocale = (function() {
     var self = {};
     var _lang = {};
@@ -456,6 +473,13 @@ var Vox = (function() {
         },
         textarea: { valueDOM: 'value', eventType: 'keyup' },
         select: { valueDOM: 'value', eventType: 'change' }
+    };
+
+    self._typeDef = {
+        'int': function(val) { return parseInt(val); },
+        'float': function(val) { return parseFloat(val); },
+        'currency': function(val) { return Vox.toFormattedCurrency(val); },
+        'string': function(val) { return val.toString(); },
     };
 
     self.getElementDef = function(e) {
