@@ -52,7 +52,6 @@ var VoxBinder = (function() {
             },
             set: function(val) {
                 var attrType = element.getAttribute(Vox.attrValueType);
-                console.log(val)
                 val = Vox.binder.castValue(attrType, val);
                 element[valueDOM] = val;
                 Vox.binder._mapping[path] = val;
@@ -61,14 +60,12 @@ var VoxBinder = (function() {
     };
 
     self.castValue = function(attrType, value) {
-        var typef = self._typeDef['string'];
-        if (attrType != null) {
-            attrType = attrType.toLowerCase();
-            if (typeof self._typeDef[attrType] !== 'undefined') {
-                typef = self._typeDef[attrType];
-            }
+        if (attrType == null) return value;
+
+        attrType = attrType.toLowerCase();
+        if (typeof self._typeDef[attrType] !== 'undefined') {
+            return self._typeDef[attrType](value);
         }
-        return typef(value);
     };
 
     self.bindElement = function(element) {
@@ -93,7 +90,7 @@ var VoxBinder = (function() {
                 var val = element[elementDef.valueDOM];
                 var attrType = element.getAttribute(Vox.attrValueType);
                 val = Vox.binder.castValue(attrType, val);
-                element.value = val;
+                element[elementDef.valueDOM] = val;
                 self._mapping[_path] = val;
             }, false);
         }
