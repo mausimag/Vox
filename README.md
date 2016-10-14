@@ -1,6 +1,9 @@
 <img src="https://s13.postimg.org/m5ufoeelz/Logomakr_2_Fx_Qcm.png" alt="VoxJS logo" align="center"/>
 
 
+[![npm version](https://badge.fury.io/js/voxjs.svg)](https://badge.fury.io/js/voxjs)
+
+
 Small and simply two way data binding and validator
 
 
