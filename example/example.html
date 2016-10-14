@@ -70,10 +70,8 @@
     Vox.validation.init()
 
     function validate() {
-        Vox.validation.validateAll(function(invalids) {
-            invalids.forEach(function(o) {
-                alert(o.message);
-            });
+        Vox.validation.validateAll().forEach(function(e) {
+            alert(e.message);
         });
     }
 

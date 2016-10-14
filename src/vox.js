@@ -33,13 +33,6 @@ var Vox = (function() {
         select: { valueDOM: 'value', eventType: 'change' }
     };
 
-    self._typeDef = {
-        'int': function(val) { return parseInt(val); },
-        'float': function(val) { return parseFloat(val); },
-        'currency': function(val) { return Vox.toFormattedCurrency(val); },
-        'string': function(val) { return val.toString(); },
-    };
-
     self.getElementDef = function(e) {
         var tagName = e.tagName ? e.tagName.toLowerCase() : "input";
         var typeName = e.type ? e.type.toLowerCase() : "text";

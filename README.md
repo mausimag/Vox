@@ -32,7 +32,7 @@ Binded, required and error message for validation:
 
     <textarea vox-bind="myObject.inner.foo"></textarea>
 
-###Ceckbox:
+###Checkbox:
 
     <input type="checkbox" vox-bind="myObject.active" />
 

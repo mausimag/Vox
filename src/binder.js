@@ -3,6 +3,13 @@ var VoxBinder = (function() {
 
     self._mapping = {};
 
+    self._typeDef = {
+        'int': function(val) { return parseInt(val); },
+        'float': function(val) { return parseFloat(val); },
+        'currency': function(val) { return Vox.toFormattedCurrency(val); },
+        'string': function(val) { return val.toString(); },
+    };
+
     self.init = function(context) {
         if (context == null) {
             self.ctx = window;
@@ -54,11 +61,11 @@ var VoxBinder = (function() {
     };
 
     self.castValue = function(attrType, value) {
-        var typef = Vox._typeDef['string'];
+        var typef = self._typeDef['string'];
         if (attrType != null) {
             attrType = attrType.toLowerCase();
-            if (typeof Vox._typeDef[attrType] !== 'undefined') {
-                typef = Vox._typeDef[attrType];
+            if (typeof self._typeDef[attrType] !== 'undefined') {
+                typef = self._typeDef[attrType];
             }
         }
         return typef(value);

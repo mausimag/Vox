@@ -108,6 +108,13 @@ var VoxBinder = (function() {
 
     self._mapping = {};
 
+    self._typeDef = {
+        'int': function(val) { return parseInt(val); },
+        'float': function(val) { return parseFloat(val); },
+        'currency': function(val) { return Vox.toFormattedCurrency(val); },
+        'string': function(val) { return val.toString(); },
+    };
+
     self.init = function(context) {
         if (context == null) {
             self.ctx = window;
@@ -159,33 +166,14 @@ var VoxBinder = (function() {
     };
 
     self.castValue = function(attrType, value) {
-        var typef = Vox._typeDef['string'];
+        var typef = self._typeDef['string'];
         if (attrType != null) {
             attrType = attrType.toLowerCase();
-            if (typeof Vox._typeDef[attrType] !== 'undefined') {
-                typef = Vox._typeDef[attrType];
+            if (typeof self._typeDef[attrType] !== 'undefined') {
+                typef = self._typeDef[attrType];
             }
         }
-
         return typef(value);
-        /*var val = value;
-        if (attrType) {
-            switch (attrType.toLowerCase()) {
-                case 'int':
-                    val = parseInt(val);
-                    break;
-                case 'float':
-                    val = parseFloat(val);
-                    break;
-                case 'currency':
-                    val = Vox.toFormattedCurrency(val);
-                    break;
-                case 'string':
-                default:
-                    val = val.toString();
-            }
-        }
-        return val;*/
     };
 
     self.bindElement = function(element) {
@@ -330,13 +318,6 @@ if (!Object.assign) {
         }
     });
 }
-var VoxFormula = (function() {
-    var self = {};
-
-    self.ctx = {};
-
-    return self;
-})();
 var VoxLocale = (function() {
     var self = {};
     var _lang = {};
@@ -473,13 +454,6 @@ var Vox = (function() {
         },
         textarea: { valueDOM: 'value', eventType: 'keyup' },
         select: { valueDOM: 'value', eventType: 'change' }
-    };
-
-    self._typeDef = {
-        'int': function(val) { return parseInt(val); },
-        'float': function(val) { return parseFloat(val); },
-        'currency': function(val) { return Vox.toFormattedCurrency(val); },
-        'string': function(val) { return val.toString(); },
     };
 
     self.getElementDef = function(e) {
