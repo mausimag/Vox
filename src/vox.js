@@ -27,7 +27,8 @@ var Vox = (function() {
     self.elementDef = {
         input: {
             text: { valueDOM: 'value', eventType: 'keyup' },
-            checkbox: { valueDOM: 'checked', eventType: 'change' }
+            checkbox: { valueDOM: 'checked', eventType: 'change' },
+            password: { valueDOM: 'value', eventType: 'keyup' }
         },
         textarea: { valueDOM: 'value', eventType: 'keyup' },
         select: { valueDOM: 'value', eventType: 'change' }
