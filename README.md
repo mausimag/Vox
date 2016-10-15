@@ -20,27 +20,20 @@ Javascript:
           option: 2
       };
 
-      Vox.bootstrap();
       Vox.binder.init()
       Vox.validation.init()
       
       
 ##Html:
   
-Binded, required and error message for validation:
+When bind object it can automatically set convert the value type to int, float, string or currency (formated).
 
-    <input type="text" vox-bind="myObject.name" vox-required="true" vox-message="Invalid name" />
-
-###Inner property:
-
+    <input type="text" vox-bind="myObject.name"/>
+    
     <textarea vox-bind="myObject.inner.foo"></textarea>
-
-###Checkbox:
-
+    
     <input type="checkbox" vox-bind="myObject.active" />
-
-###Bind with value type (int, float, string):
-
+    
     <select vox-bind="myObject.option" vox-value-type="int">
         <option value="0">0</option>
         <option value="1">1</option>
@@ -50,9 +43,9 @@ Binded, required and error message for validation:
     </select>
     
     
-###Bind table
+##Binding table to array
 
-Table update when insert item to array:
+Table changes when use push, pop, or splice the binded array.
 
 HTML:
 
@@ -80,22 +73,29 @@ Javascript:
     myArr.push({'name':'test', 'age':20, 'inner':{'foo':'bar_test'}})
     
     
-###Calling validation:
+##Validation:
 
-    Vox.validation.validateAll(function(invalids) {
-          invalids.forEach(function(o) {
-              alert(o.message);
-          });
-      });
+#####vox-required="true" - required
+#####vox-pattern="regex" - validation based on regex
+#####vox-message="Invalid name" - invalid message
+
+Validation returns 'message' or 'element':
+
+    Vox.validation.validateAll().forEach(function(e) {
+            alert(e.message);
+     });
       
       
 ##AJAX (get, post, put, delete):
+
+Returns success, error or then (used for both);
 
     Vox.ajax.get(URL, DATA).success(function(response){
       console.log(response);
     }).error(function(err) {
       console.log(err);
     });
+
 
 ##Locale
 
