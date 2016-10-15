@@ -75,9 +75,9 @@ Javascript:
     
 ##Validation:
 
-#####vox-required="true" - required
-#####vox-pattern="regex" - validation based on regex
-#####vox-message="Invalid name" - invalid message
+  * vox-required="true" - required
+  * vox-pattern="regex" - validation based on regex
+  * vox-message="Invalid name" - invalid message
 
 Validation returns 'message' or 'element':
 
