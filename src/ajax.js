@@ -86,15 +86,15 @@ var VoxAjax = (function() {
     };
 
     self.post = function(url, data) {
-        return self.http({ method: 'POST', url: url, data: data, contentType: 'application/json' })
+        return self.http({ method: 'POST', url: url, data: JSON.stringify(data), contentType: 'application/json' })
     };
 
     self.get = function(url, data) {
-        return self.http({ method: 'GET', url: url, data: data, contentType: 'application/json' })
+        return self.http({ method: 'GET', url: url, data: JSON.stringify(data), contentType: 'application/json' })
     };
 
     self.put = function(url, data) {
-        return self.http({ method: 'PUT', url: url, data: data, contentType: 'application/json' })
+        return self.http({ method: 'PUT', url: url, data: JSON.stringify(data), contentType: 'application/json' })
     };
 
     self.delete = function(url, data) {
