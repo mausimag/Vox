@@ -4,7 +4,7 @@
 [![npm version](https://badge.fury.io/js/voxjs.svg)](https://badge.fury.io/js/voxjs)
 
 
-Small and simply two way data binding and validator
+Small and very simple two way data binding and validator
 
 
  Usage
